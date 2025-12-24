@@ -1,0 +1,56 @@
+## Använd två olika isolation levels och förklara skillnaden
+De två olika isolations levels jag valde att använda var Read Committed och Serializable. 
+Serializable är den högsta nivån av isolation. Transaktioner körs en i taget, vilket förhindrar dirty reads
+som betyder att man kan läsa data som ännu inte är committed och förhindrar även non-repeatable reads som tillåter 
+att en annan transaktion körs och uppdaterar data under tiden. Detta säkerställer maximal datakonsistent.
+
+Read Committed säkerställer att man endast ser committed data, vilket betyder att det förhindrar dirty reads men tillåter 
+non-repeatable reads.
+
+Skillnaden mellan dessa 2 är att Serializable mycket striktare men ger också mindre prestanda. Serializable är bäst 
+för kritiska transaktioner som påverkar lager saldo som att låna bok, därför använder jag Serializable vid bok lån så 
+jag undviker konflikt. Read Committed ger bra balans mellan prestanda och säkerhet och funkar bästa för select frågor 
+där det är okej att data ändras mellan transaktioner. 
+
+
+
+## Användning av index & Jämförelse av index seek och index scan
+Jag använde index på 2 ställen. Första var på bok titel, där jag skapade index eftersom användare oftast vill söka via 
+titel blir index mycket effektivt här. Utan index kommer databasen göra en clustered index scan här den går genom alla rader i 
+tabellen om användaren t.ex söker 'The great gatsby'. Med index kommer det bli index seek där databasen direkt går till 
+T och hittar rätt book. Jag skapade även index för användarens lån historik. Med tiden kommer lån tabellen växa och vi 
+kommer ha många lån. Med index kommer det gå mycket snabbare när vi gör: 'SELECT * FROM BookLoan WHERE FkMemberId = 1', 
+där databasen kommer snabbt gruppera alla lån som tillhör ID:1 istället för att den ska gå genom tabellen rad för rad vilket
+kommer vara långsamt. Det jag har lärt mig från detta är att index seek är snabbt och man ska sträva efter det och 
+man ska skapa index för queries som man kör ofta. Så om jag vill lägga till filtering system där användaren kan 
+filterera med hjälp av genre, author osv, då kan index vara hjälpsam.
+
+## ER Diagram 
+Entiteter och attribut
+Member
+ -MemberId (PK)
+ -FirstName, LastName
+ -Email
+ -PhoneNumber
+Book
+ -BookId (PK)
+ -BookTitle
+ -Author
+ -Genre
+ -PublicationYear
+BookLoan
+ -LoanId (PK)
+ -LoanDate
+ -FkMemberId (FK → Member)
+ -FkBookId (FK → Book)
+BookReturn
+  -ReturnId (PK)
+  -ReturnDate
+  -FkLoanId (FK → Loan)
+Relationer
+Member – Loan:
+En medlem kan ha flera lån, men varje lån tillhör exakt en medlem.
+Book – BookLoan:
+En bok kan förekomma i flera lån över tid, men varje lån gäller exakt en bok.
+BookLoan – Return:
+Ett lån kan ha en retur (när boken lämnas tillbaka), och varje retur hör till ett specifikt lån.
