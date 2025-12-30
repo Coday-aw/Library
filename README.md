@@ -24,9 +24,7 @@
 ## Entity Relationship Diagram
 <img width="3399" height="2496" alt="erdplus (11)" src="https://github.com/user-attachments/assets/c53bf507-2763-40e8-9535-6f23c32c3869" />
 
-## Video Demo
 
-https://github.com/user-attachments/assets/a7b0829f-28dc-41e7-8fa5-7a92d5817269
 
 
 
