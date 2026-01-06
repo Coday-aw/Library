@@ -1,5 +1,8 @@
 ## Library Project
 
+A robust C# Console Application designed to streamline library operations, including book inventory management, member tracking, 
+and loan processing. This project demonstrates a clean implementation of Entity Framework Core with SQL Server.
+
 ## Features
 - Book Management: Add, Update, and Delete books from the catalog.
 - Register Loans: Check out books with automatic validation.
